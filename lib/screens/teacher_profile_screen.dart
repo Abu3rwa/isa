@@ -6,7 +6,7 @@ import 'package:homeschooler/utils/theme.dart';
 import 'package:homeschooler/widgets/appbar.dart';
 
 class TeacherProfileScreen extends StatefulWidget {
-  const TeacherProfileScreen({super.key});
+  TeacherProfileScreen();
   static const teacherProfileScreenRoute = '/teacherProfileScreenRoute';
 
   @override
@@ -43,7 +43,7 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
             return ListView(
               children: snapshot.data!.docs.map((DocumentSnapshot document) {
                 final data = document.data() as Map<String, dynamic>;
-                final teacher = userModel.fromJson(data);
+                final teacher = UserModel.fromJson(data);
                 return Column(
                   children: [
                     Row(
@@ -113,15 +113,14 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Text(
+                    const Text(
                       "Materials You Teach",
-                      style:
-                          const TextStyle(color: Colors.black54, fontSize: 20),
+                      style: TextStyle(color: Colors.black54, fontSize: 20),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Container(
+                    SizedBox(
                       height: MediaQuery.of(context).size.height / 2,
                       child: ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -143,7 +142,11 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                                       MaterialManageMentScreen
                                           .materialManageMentScreenRoute,
                                       arguments: {
+                                        "teacher": teacher.name,
+                                        "grade": teacher.grades[index]["grade"],
+                                        "teacherEmail": teacher.email,
                                         "material": teacher.grades[index]
+                                            ["material"]
                                       });
                                 },
                                 child: ListTile(

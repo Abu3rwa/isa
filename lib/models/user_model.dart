@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class userModel {
+class UserModel {
   List grades;
   String name;
   int phone;
@@ -8,7 +8,7 @@ class userModel {
   String email;
   int age;
   String gender;
-  userModel(
+  UserModel(
       {required this.grades,
       required this.name,
       required this.phone,
@@ -21,8 +21,6 @@ class userModel {
     return {
       "grades": grades,
       "name": name,
-      "name": name,
-      "phone": phone,
       "phone": phone,
       "grade": grade,
       "age": age,
@@ -31,7 +29,7 @@ class userModel {
     };
   }
 
-  static userModel fromJson(Map<String, dynamic> json) => userModel(
+  static UserModel fromJson(Map<String, dynamic> json) => UserModel(
         grades: json["grades"] ?? [],
         name: json["name"] ?? "",
         phone: json["phone"] ?? 0,

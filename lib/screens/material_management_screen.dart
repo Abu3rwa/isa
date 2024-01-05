@@ -1,8 +1,11 @@
+import 'dart:convert';
+import 'package:homeschooler/models/quizModel.dart';
+import 'package:homeschooler/screens/choose_type_of_question.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:homeschooler/utils/theme.dart';
-import 'package:homeschooler/widgets/appbar.dart';
+import '../utils/theme.dart';
+import '../widgets/list_of_quizzes.dart';
 
 class MaterialManageMentScreen extends StatefulWidget {
   static const materialManageMentScreenRoute = "/materialManageMentScreenRoute";
@@ -19,6 +22,7 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -33,43 +37,41 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                 image: AssetImage("assets/images/school-logo.png"),
               ),
             ),
-            const Text("ISA School"),
+            Text("materials"),
           ],
         ),
       ),
       body: FutureBuilder<QuerySnapshot>(
         future: FirebaseFirestore.instance
-            .collection('materials')
-            .where('name', isEqualTo: 'English Language')
+            .collection('quizzes')
+            .where('material', isEqualTo: args["material"])
             .get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
+            print(snapshot.hasError);
             return Text('Error: ${snapshot.error}');
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(
+              color: Colors.cyan,
+            ));
           }
 
           if (snapshot.data!.docs.isEmpty) {
-            return Text('No document found with name: name');
+            print('No document found with name: name');
+            return Center(
+                child: const Text('No document found with name: name'));
           }
 
-          final document = snapshot.data!.docs.first;
-          final material = document.data() as Map<String, dynamic>;
-          print(document);
-          Timestamp time = material["quizzes"]["trueFalse"]["dueDate"];
-          final date =
-              DateTime.fromMillisecondsSinceEpoch(time.microsecondsSinceEpoch);
-          String formattedDate =
-              DateFormat('MMM dd yyyy').format(time.toDate()); // "2022-08-25"
+          final documents = snapshot.data!.docs as List;
 
-          print(material["quizzes"]["trueFalse"]["questions"]);
-          // Access the fields of the document
-          // final documentName = data['name'] as String;
-          // final documentField1 = data['quizzes'] as String;
-          // final documentField2 = data['others'] as int;
-
+          List list = [];
+          List quizzes = documents.toList();
+          quizzes.forEach((quiz) {
+            list.add(quiz.data());
+          });
           return SingleChildScrollView(
             child: Container(
               height: MediaQuery.of(context).size.height,
@@ -78,19 +80,20 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          material['name'],
+                          args["material"],
                           style: TextStyle(
                               color: MyAppTheme.mainTextColor,
                               fontSize: 20,
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          "Grade ${material["grade"]}",
+                          "Grade ${args['grade']}",
                           style: TextStyle(
                               color: MyAppTheme.mainTextColor,
                               fontSize: 20,
@@ -98,9 +101,10 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
+                    // Column(children: quizzes.map<Widget>((value.data()) => ListTile() ).toList(),)
                     Column(
                       children: [
                         Container(
@@ -113,15 +117,16 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                                   elevation: 0,
                                   onPressed: () {},
                                   child: Text(
-                                      style: TextStyle(
-                                        color: MyAppTheme.white,
-                                        fontSize: 12,
-                                      ),
-                                      "Assignments"),
+                                    "quizzes.material",
+                                    style: TextStyle(
+                                      color: MyAppTheme.white,
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                   color: MyAppTheme.primaryBg,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               Expanded(
@@ -129,15 +134,16 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                                   elevation: 0,
                                   onPressed: () {},
                                   child: Text(
-                                      style: TextStyle(
-                                        color: MyAppTheme.mainTextColor,
-                                        fontSize: 13,
-                                      ),
-                                      "quizzes"),
+                                    "quizzes",
+                                    style: TextStyle(
+                                      color: MyAppTheme.mainTextColor,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                   color: MyAppTheme.white,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                               Expanded(
@@ -145,127 +151,74 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                                   elevation: 0,
                                   onPressed: () {},
                                   child: Text(
-                                      style: TextStyle(
-                                        color: MyAppTheme.mainTextColor,
-                                        fontSize: 13,
-                                      ),
-                                      "Others"),
+                                    "Others",
+                                    style: TextStyle(
+                                      color: MyAppTheme.mainTextColor,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                   color: MyAppTheme.white,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 5,
                               ),
                             ],
                           ),
                         ),
-                        Container(
-                            child: Column(
+                        Column(
                           children: [
-                            Column(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    InkWell(
-                                      overlayColor: MaterialStatePropertyAll(
-                                          Colors.teal[200]),
-                                      onTap: () {},
-                                      child: Container(
-                                        margin: EdgeInsets.all(5),
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(6),
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                color: Colors.teal,
-                                                width: 2,
-                                              ),
-                                              top: BorderSide(
-                                                color: Colors.teal,
-                                                width: 2,
-                                              ),
-                                              right: BorderSide(
-                                                color: Colors.teal,
-                                                width: 2,
-                                              ),
-                                              left: BorderSide(
-                                                color: Colors.teal,
-                                                width: 2,
-                                              ),
-                                            )),
-                                        child: Text(
-                                            style: TextStyle(
-                                              color: MyAppTheme.primaryBg,
-                                              fontSize: 14,
-                                            ),
-                                            "New Assignments"),
+                                InkWell(
+                                  overlayColor: MaterialStatePropertyAll(
+                                      Colors.teal[200]),
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context,
+                                        ChooseTypeOfQuestionScreen
+                                            .chooseTypeOfQuestionScreen,
+                                        arguments: args);
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.all(5),
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.teal,
+                                            width: 2,
+                                          ),
+                                          top: BorderSide(
+                                            color: Colors.teal,
+                                            width: 2,
+                                          ),
+                                          right: BorderSide(
+                                            color: Colors.teal,
+                                            width: 2,
+                                          ),
+                                          left: BorderSide(
+                                            color: Colors.teal,
+                                            width: 2,
+                                          ),
+                                        )),
+                                    child: Text(
+                                      "New Assignments",
+                                      style: TextStyle(
+                                        color: MyAppTheme.primaryBg,
+                                        fontSize: 14,
                                       ),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                                Column(
-                                  children: material["quizzes"]["trueFalse"]
-                                          ["questions"]
-                                      .map<Widget>((q) {
-                                    print(q["questionText"]);
-                                    return ListTile(
-                                      title: Text(material["quizzes"]
-                                          ["trueFalse"]["instructions"]),
-                                      subtitle:
-                                          Text("Due Date: ${formattedDate}"),
-                                      trailing: IconButton(
-                                        // style: ButtonStyle(
-                                        //     backgroundColor:
-                                        //         MaterialStatePropertyAll(
-                                        //             MyAppTheme.primaryBg)),
-                                        icon: Icon(
-                                          Icons.edit,
-                                          size: 30,
-                                          color: MyAppTheme.primaryBg,
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                    );
-                                  }).toList(),
-                                )
-
-                                // Container(
-                                //   height:
-                                //       MediaQuery.of(context).size.height - 150,
-                                //   child: ListView.builder(
-                                //       itemCount: 9,
-                                //       itemBuilder: (context, index) {
-                                //         return Container(
-                                //           color: MyAppTheme.secondaryGreyBg,
-                                //           margin: EdgeInsets.all(5),
-                                //           child: ListTile(
-                                //             title: Text(material["quizzes"]
-                                //                 ["trueFalse"]["instructions"]),
-                                //             subtitle: Text(
-                                //                 "Due Date: ${formattedDate}"),
-                                //             trailing: IconButton(
-                                //               // style: ButtonStyle(
-                                //               //     backgroundColor:
-                                //               //         MaterialStatePropertyAll(
-                                //               //             MyAppTheme.primaryBg)),
-                                //               icon: Icon(
-                                //                 Icons.edit,
-                                //                 size: 30,
-                                //                 color: MyAppTheme.primaryBg,
-                                //               ),
-                                //               onPressed: () {},
-                                //             ),
-                                //           ),
-                                //         );
-                                //       }),
-                                // ),
                               ],
-                            )
+                            ),
+                            ListOfQuizzes(list: list)
                           ],
-                        ))
+                        )
                       ],
                     )
                   ]),

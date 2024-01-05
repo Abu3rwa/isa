@@ -24,6 +24,7 @@ class MyAppTheme {
 
   static var primaryBg = Colors.cyan[800];
   static var secondaryBg = Colors.amber[800];
+  static var darkTextColor = Colors.black87;
   static var mainTextColor = Colors.black54;
   static var lightTextColor = Colors.black38;
   static var lighterTextColor = Colors.black26;
