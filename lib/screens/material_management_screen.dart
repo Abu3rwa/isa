@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:homeschooler/models/quizModel.dart';
+import 'package:homeschooler/models/quiz_model.dart';
 import 'package:homeschooler/screens/choose_type_of_question.dart';
+import 'package:homeschooler/widgets/list_of_summaries.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,18 @@ class MaterialManageMentScreen extends StatefulWidget {
 
 class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  GlobalKey quizzessKey = GlobalKey();
+  GlobalKey summariesKey = GlobalKey();
+  GlobalKey othersKey = GlobalKey();
+  var isActive;
+  void initState() {
+    super.initState();
+    setState(() {
+      isActive = quizzessKey;
+    });
+  }
 
+  final summariesList = [];
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
@@ -45,6 +57,7 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
         future: FirebaseFirestore.instance
             .collection('quizzes')
             .where('material', isEqualTo: args["material"])
+            .where('grade', isEqualTo: args["grade"])
             .get(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -59,24 +72,19 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
             ));
           }
 
-          if (snapshot.data!.docs.isEmpty) {
-            print('No document found with name: name');
-            return Center(
-                child: const Text('No document found with name: name'));
-          }
+          final documents = snapshot.data!.docs;
 
-          final documents = snapshot.data!.docs as List;
-
-          List list = [];
+          List<QuizModel> quizzesList = [];
           List quizzes = documents.toList();
           quizzes.forEach((quiz) {
-            list.add(quiz.data());
+            quizzesList.add(QuizModel.fromJson(quiz.data(), quiz));
           });
-          return SingleChildScrollView(
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              color: MyAppTheme.mainBg,
-              padding: EdgeInsets.all(10),
+
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            color: MyAppTheme.mainBg,
+            padding: const EdgeInsets.all(10),
+            child: SingleChildScrollView(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -109,38 +117,30 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                       children: [
                         Container(
                           color: MyAppTheme.primaryBg,
-                          padding: EdgeInsets.all(3),
+                          padding: const EdgeInsets.all(3),
                           child: Row(
                             children: [
                               Expanded(
                                 child: MaterialButton(
+                                  key: quizzessKey,
                                   elevation: 0,
-                                  onPressed: () {},
-                                  child: Text(
-                                    "quizzes.material",
-                                    style: TextStyle(
-                                      color: MyAppTheme.white,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  color: MyAppTheme.primaryBg,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              Expanded(
-                                child: MaterialButton(
-                                  elevation: 0,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setState(() {
+                                      isActive = quizzessKey;
+                                    });
+                                  },
                                   child: Text(
                                     "quizzes",
                                     style: TextStyle(
-                                      color: MyAppTheme.mainTextColor,
-                                      fontSize: 13,
+                                      color: isActive == quizzessKey
+                                          ? MyAppTheme.white
+                                          : MyAppTheme.primaryBg,
+                                      fontSize: 12,
                                     ),
                                   ),
-                                  color: MyAppTheme.white,
+                                  color: isActive == quizzessKey
+                                      ? MyAppTheme.primaryBg
+                                      : MyAppTheme.white,
                                 ),
                               ),
                               const SizedBox(
@@ -148,16 +148,47 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                               ),
                               Expanded(
                                 child: MaterialButton(
+                                  key: summariesKey,
                                   elevation: 0,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setState(() {
+                                      isActive = summariesKey;
+                                    });
+                                  },
+                                  child: Text("summaries",
+                                      style: TextStyle(
+                                        color: isActive == summariesKey
+                                            ? MyAppTheme.white
+                                            : MyAppTheme.primaryBg,
+                                      )),
+                                  color: isActive == summariesKey
+                                      ? MyAppTheme.primaryBg
+                                      : MyAppTheme.white,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              Expanded(
+                                child: MaterialButton(
+                                  key: othersKey,
+                                  elevation: 0,
+                                  onPressed: () {
+                                    setState(() {
+                                      isActive = othersKey;
+                                    });
+                                  },
                                   child: Text(
                                     "Others",
                                     style: TextStyle(
-                                      color: MyAppTheme.mainTextColor,
-                                      fontSize: 13,
+                                      color: isActive == othersKey
+                                          ? MyAppTheme.white
+                                          : MyAppTheme.primaryBg,
                                     ),
                                   ),
-                                  color: MyAppTheme.white,
+                                  color: isActive == othersKey
+                                      ? MyAppTheme.primaryBg
+                                      : MyAppTheme.white,
                                 ),
                               ),
                               const SizedBox(
@@ -168,55 +199,17 @@ class _MaterialManageMentScreenState extends State<MaterialManageMentScreen> {
                         ),
                         Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                InkWell(
-                                  overlayColor: MaterialStatePropertyAll(
-                                      Colors.teal[200]),
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context,
-                                        ChooseTypeOfQuestionScreen
-                                            .chooseTypeOfQuestionScreen,
-                                        arguments: args);
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.all(5),
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(6),
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: Colors.teal,
-                                            width: 2,
-                                          ),
-                                          top: BorderSide(
-                                            color: Colors.teal,
-                                            width: 2,
-                                          ),
-                                          right: BorderSide(
-                                            color: Colors.teal,
-                                            width: 2,
-                                          ),
-                                          left: BorderSide(
-                                            color: Colors.teal,
-                                            width: 2,
-                                          ),
-                                        )),
-                                    child: Text(
-                                      "New Assignments",
-                                      style: TextStyle(
-                                        color: MyAppTheme.primaryBg,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            ListOfQuizzes(list: list)
+                            isActive == quizzessKey
+                                ? ListOfQuizzes(
+                                    quizzesList: quizzesList,
+                                    args: args,
+                                  )
+                                : isActive == summariesKey
+                                    ? ListOfSummaries(
+                                        summariesList: summariesList,
+                                        args: args,
+                                      )
+                                    : Center(child: Text("not yet"))
                           ],
                         )
                       ],

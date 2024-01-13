@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:homeschooler/models/studentModel.dart';
 
 class StudentInfo extends StatelessWidget {
-  const StudentInfo({super.key});
+  StudentModel student;
+  StudentInfo({super.key, required this.student});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +29,9 @@ class StudentInfo extends StatelessWidget {
             TableCell(
               child: Container(
                 padding: const EdgeInsets.all(8.0),
-                child: const Text(
-                  '7',
-                  style: TextStyle(
+                child: Text(
+                  student.grade.toString(),
+                  style: const TextStyle(
                     color: Colors.yellowAccent,
                     fontSize: 15,
                   ),
@@ -45,7 +47,7 @@ class StudentInfo extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(8.0),
                 child: const Text(
-                  "13",
+                  "Age",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 15,
@@ -56,9 +58,9 @@ class StudentInfo extends StatelessWidget {
             TableCell(
               child: Container(
                 padding: const EdgeInsets.all(8.0),
-                child: const Text(
-                  '22',
-                  style: TextStyle(
+                child: Text(
+                  student.age.toString(),
+                  style: const TextStyle(
                     color: Colors.yellowAccent,
                     fontSize: 15,
                   ),

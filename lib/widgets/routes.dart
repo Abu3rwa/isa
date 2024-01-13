@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:homeschooler/screens/add_true_false_question.dart';
-import 'package:homeschooler/screens/choose_type_of_question.dart';
+import '../screens/add_true_false_question.dart';
+import '../screens/choose_type_of_question.dart';
+import '../screens/login_screen.dart';
+import '../screens/create_summary_screen.dart';
+import '../screens/true_false_quiz_screen.dart';
 import '../screens/material_management_screen.dart';
 import '../screens/students_screen.dart';
 import '../screens/teacher_profile_screen.dart';
-import '../screens/materials-screen.dart';
+import '../screens/materialsScreen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/signup_screen.dart';
 
@@ -43,13 +46,31 @@ Route<dynamic> generateRoutes(RouteSettings routeSettings) {
     case MaterialManageMentScreen.materialManageMentScreenRoute:
       return MaterialPageRoute(
           builder: (BuildContext context) {
-            return MaterialManageMentScreen();
+            return const MaterialManageMentScreen();
           },
           settings: routeSettings);
     case ChooseTypeOfQuestionScreen.chooseTypeOfQuestionScreen:
       return MaterialPageRoute(
           builder: (BuildContext context) {
-            return ChooseTypeOfQuestionScreen();
+            return const ChooseTypeOfQuestionScreen();
+          },
+          settings: routeSettings);
+    case TrueFalseQuizScreen.trueFalseQuizScreenRoute:
+      return MaterialPageRoute(
+          builder: (BuildContext context) {
+            return TrueFalseQuizScreen();
+          },
+          settings: routeSettings);
+    case LoginScreen.loginScreenRoute:
+      return MaterialPageRoute(
+          builder: (BuildContext context) {
+            return LoginScreen();
+          },
+          settings: routeSettings);
+    case CreateSummaryScreen.createSummaryScreenRoute:
+      return MaterialPageRoute(
+          builder: (BuildContext context) {
+            return CreateSummaryScreen();
           },
           settings: routeSettings);
     case AddTrueFalseQuestion.addTrueFalseQuestionRoute:
@@ -61,7 +82,7 @@ Route<dynamic> generateRoutes(RouteSettings routeSettings) {
 
     default:
       return MaterialPageRoute(
-          builder: (BuildContext context) => Scaffold(
+          builder: (BuildContext context) => const Scaffold(
                 body: Center(
                     child: Column(
                   children: [

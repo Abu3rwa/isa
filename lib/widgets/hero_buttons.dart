@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../screens/materials-screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../screens/materialsScreen.dart';
 
 class HeroButtons extends StatelessWidget {
   const HeroButtons({super.key});
@@ -7,9 +8,16 @@ class HeroButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      // height: 200,
-      margin: const EdgeInsets.only(top: 20, bottom: 20),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height / 3 +
+          MediaQuery.of(context).size.height / 3,
+
+      decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(40), topRight: Radius.circular(40))),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(top: 30, bottom: 0),
       // color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +91,7 @@ class CustomedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width / 2 - 20,
+      width: MediaQuery.of(context).size.width / 3 + 20,
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
           // color: Colors.white,
@@ -98,21 +106,20 @@ class CustomedCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 17,
+                  fontSize: 14,
                   color: Colors.black54,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
               Icon(
                 icon,
-                size: 70,
+                size: 50,
                 color: Colors.cyan,
               )
             ],

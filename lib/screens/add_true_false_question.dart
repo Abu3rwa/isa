@@ -4,7 +4,7 @@ import '../utils/theme.dart';
 
 class AddTrueFalseQuestion extends StatefulWidget {
   static const addTrueFalseQuestionRoute = "/addTrueFalseQuestionRoute";
-
+  const AddTrueFalseQuestion();
   @override
   _AddTrueFalseQuestionState createState() => _AddTrueFalseQuestionState();
 }
@@ -13,7 +13,8 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
   final TextEditingController _questionController = TextEditingController();
   final TextEditingController _instructionsController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
+  final TextEditingController _dueDateController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   bool questionAnswer = true;
   var questions = [];
 
@@ -21,7 +22,7 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
     final quiz = {
-      "teacher": args["name"],
+      "teacher": args["teacher"],
       "questions": questions,
       "grade": args["grade"],
       "teacherEmail": args["teacherEmail"],
@@ -41,13 +42,27 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(14.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(2),
+                  margin: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.black12),
+                  child: TextField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(borderSide: BorderSide.none),
+                      hintText: 'Title: eg. the name of the topics included',
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(2),
                   margin: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -56,12 +71,12 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
                     controller: _instructionsController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(borderSide: BorderSide.none),
-                      hintText: 'instructions',
+                      hintText: 'Instructions',
                     ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(2),
                   margin: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -75,21 +90,21 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
                 ),
                 const SizedBox(height: 30.0),
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(2),
                   margin: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.black12),
                   child: TextField(
-                    controller: _questionController,
+                    controller: _dueDateController,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: "Question"),
+                        hintText: "Due Date"),
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 30.0),
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(2),
                   margin: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -97,6 +112,20 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        margin: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white),
+                        child: TextField(
+                          controller: _questionController,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none),
+                              hintText: "Question Text"),
+                        ),
+                      ),
                       const ListTile(
                         title: Text(
                           'Answer:',
@@ -144,6 +173,34 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 15.0),
+                questions.length > 0
+                    ? Text.rich(
+                        TextSpan(children: [
+                          TextSpan(
+                              text: "You Added: ",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: MyAppTheme.lightTextColor,
+                              )),
+                          TextSpan(
+                              text: questions.length.toString(),
+                              style: TextStyle(
+                                  color: MyAppTheme.primaryBg,
+                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: " Questions",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: MyAppTheme.lightTextColor,
+                              ))
+                        ]),
+                      )
+                    : const Text(
+                        "you didn't add any questions",
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
                 const SizedBox(height: 20.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -171,16 +228,30 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        print({
+                          "questions": questions,
+                          "instructions": _instructionsController.text,
+                          "note": _notesController.text,
+                          "teacher": args["name"],
+                          "grade": args["grade"],
+                          "teacherEmail": args["teacherEmail"],
+                          "material": args["material"],
+                          "title": _titleController.text,
+                          'dateDate': _dueDateController.text,
+                          "type": "true/false"
+                        });
                         QuizService().addTrueFalseQuiz(
+                            dueDate: _dueDateController.text,
+                            title: _titleController.text,
                             questions: questions,
                             instructions: _instructionsController.text,
-                            type: _typeController.text,
+                            dateDate: _dueDateController.text,
                             note: _notesController.text,
-                            teacher: args["name"],
+                            teacher: args["teacher"],
                             grade: args["grade"],
                             teacherEmail: args["teacherEmail"],
                             material: args["material"],
-                            typeOfQuestion: "true/false");
+                            type: "true/false");
                       },
                       style: const ButtonStyle(
                           foregroundColor:
@@ -202,5 +273,6 @@ class _AddTrueFalseQuestionState extends State<AddTrueFalseQuestion> {
   addQuestion() {
     questions.add(
         {"questionText": _questionController.text, "answer": questionAnswer});
+    setState(() {});
   }
 }

@@ -40,6 +40,8 @@ dependencies:
   firebase_storage: ^11.5.6
   cloud_firestore: ^4.13.6
   flutter_launcher_icons: ^0.13.1
+  provider: ^6.1.1
+  font_awesome_flutter: ^10.6.0
   shared_preferences: ^2.2.2
   badges: ^2.0.1
   flutter_native_splash: 2.3.7
@@ -48,7 +50,7 @@ flutter_launcher_icons:
   image_path: "assets/images/school-launch.png"
 flutter_native_splash:
   color: "#ffffff"
-  image: assets/images/school-logo.png
+  image: assets/images/school-launch.png
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -77,10 +79,11 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/app_logo.png
+    - assets/images/paper.jpg
     - assets/images/school-logo.png
     - assets/images/school-launch.png
-    - assets/images/flag.png
-  # An image asset can refer to one or more resolution-specific "variants", see
+    - assets/images/school-splash.png
+    # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
   # For details regarding adding assets from package dependencies, see

@@ -16,7 +16,7 @@ class _ChooseTypeOfQuestionScreenState
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Map;
-
+    print(args);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: MyAppTheme.primaryBg,
@@ -63,7 +63,7 @@ class _ChooseTypeOfQuestionScreenState
                   Navigator.pushNamed(
                       context, AddTrueFalseQuestion.addTrueFalseQuestionRoute,
                       arguments: {
-                        "teacher": args["name"],
+                        "teacher": args["teacher"],
                         "grade": args["grade"],
                         "teacherEmail": args["teacherEmail"],
                         "material": args["material"],

@@ -1,3 +1,7 @@
+import 'package:homeschooler/screens/new_user_screen.dart';
+import 'package:homeschooler/services/studentService.dart';
+import 'package:homeschooler/services/teacherService.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -23,24 +27,48 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var type;
+  String? type;
   setUserType() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("type", "teacher");
     type = prefs.getString("user-type");
-    //  if(type==null){
-    //   }
+    if (type == null) {
+      isNewUser = false;
+    }
   }
 
+  var isNewUser = true;
+  String? userType;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'School App',
-      theme: ThemeData(
-          // primarySwatch: Colors.indigo,
-          ),
-      home: const SchoolHomePage(),
-      onGenerateRoute: (settings) => generateRoutes(settings),
+    getUserType() async {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        userType = prefs.getString("userType");
+      });
+      if (userType != null) {
+        setState(() {
+          isNewUser = false;
+        });
+      } else {
+        isNewUser = true;
+      }
+    }
+
+    getUserType();
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => TeacherService()),
+        ChangeNotifierProvider(create: (context) => StudentService()),
+      ],
+      child: MaterialApp(
+        title: 'School App',
+        theme: ThemeData(
+            // primarySwatch: Colors.indigo,
+            ),
+        home: isNewUser ? const NewUserScreen() : SchoolHomePage(),
+        onGenerateRoute: (settings) => generateRoutes(settings),
+      ),
     );
   }
 }

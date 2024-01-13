@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class QuizModel {
   List questions;
   String material;
+  String title;
+  String id;
   int grade;
   String instructions;
   String type;
@@ -15,6 +16,8 @@ class QuizModel {
   QuizModel(
       {required this.questions,
       required this.material,
+      required this.title,
+      required this.id,
       required this.grade,
       required this.type,
       required this.teacher,
@@ -28,6 +31,8 @@ class QuizModel {
     return {
       "questions": questions,
       "material": material,
+      "title": title,
+      "id": id,
       "grade": grade,
       "type": type,
       "teacher": teacher,
@@ -39,9 +44,11 @@ class QuizModel {
     };
   }
 
-  static QuizModel fromJson(Map<String, dynamic> json) => QuizModel(
+  static QuizModel fromJson(Map<String, dynamic> json, quiz) => QuizModel(
         questions: json["questions"] ?? [],
         material: json["material"] ?? "",
+        title: json["title"] ?? "",
+        id: quiz.id ?? "",
         grade: json["grade"] ?? 0,
         instructions: json["instructions"] ?? "",
         type: json["type"] ?? "",
